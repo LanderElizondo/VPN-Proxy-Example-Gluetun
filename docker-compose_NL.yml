@@ -1,0 +1,46 @@
+version: "3"
+
+services:
+  gluetun:
+    image: qmcgaw/gluetun    
+    container_name: NL_VPN
+    # line above must be uncommented to allow external containers to connect.
+    # See https://github.com/qdm12/gluetun-wiki/blob/main/setup/connect-a-container-to-gluetun.md#external-container-to-gluetun
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    ports:
+      - 8896:8888/tcp # HTTP proxy
+      - 8396:8388/tcp # Shadowsocks
+      - 8396:8388/udp # Shadowsocks
+      # - 0.0.0.0:8888:8888/tcp # HTTP proxy
+      # - 0.0.0.0:8388:8388/tcp # Shadowsocks
+      # - 0.0.0.0:8388:8388/udp # Shadowsocks
+    volumes:  
+      - #Path to a directory
+    environment:
+      - HTTPPROXY=on
+      - HTTPPROXY_LOG=on
+      #- SHADOWSOCKS=on
+      # See https://github.com/qdm12/gluetun-wiki/tree/main/setup#setup
+      - VPN_SERVICE_PROVIDER=protonvpn
+      - VPN_TYPE=openvpn
+      #- VPN_PORT_FORWARDING=on
+      # OpenVPN:
+      #- HTTPPROXY_LISTENING_ADDRESS=192.168.0.2:9090
+      - OPENVPN_USER= #Your user
+      - OPENVPN_PASSWORD= #Your password
+      - SERVER_COUNTRIES=netherlands #Or any country supported by your provider
+      - FREE_ONLY= on
+      # Wireguard:
+      # - WIREGUARD_PRIVATE_KEY=QLo64qLZtMH/daDx7O7RmXPbjH6r5vFJNLue5mcVGFA=
+      # - WIREGUARD_ADDRESSES=10.2.0.2/32
+      # - SERVER_COUNTRIES=united states
+      # - FREE_ONLY= on
+      # Timezone for accurate log times
+      - TZ=UTC
+      # Server list updater
+      # See https://github.com/qdm12/gluetun-wiki/blob/main/setup/servers.md#update-the-vpn-servers-list
+      - UPDATER_PERIOD=24h
+    restart: always
